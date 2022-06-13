@@ -1,9 +1,11 @@
 import os
 import settings
+import uuid
+from zeroconf_service import register_zeroconf, unregister_zeroconf
 from loguru import logger
 
 import uvicorn
-from fastapi import FastAPI, File, Form, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -22,33 +24,38 @@ app.add_middleware(
 )
 
 
-def blockPrint():
-    sys.stdout = open(os.devnull, "w")
-
+# Ping API
 
 @app.get("/ping")
 async def ping():
     return "OK", 200
 
+# Upload File API
 
-@app.post("/")
-async def create_file(
-    file: bytes = File(...), fileb: UploadFile = File(...), token: str = Form(...)
+
+@app.post('/upload')
+async def upload_file(
+    file: UploadFile = File(...)
 ):
-    logger.debug(token)
-    if len(token) <= 0:
-        raise HTTPException(status_code=404, detail="Token not found")
+    file_location = f"uploads/{uuid.uuid4()}.{file.filename.split('.')[-1]}"
+    with open(file_location, "wb+") as file_object:
+        file_object.write(file.file.read())
+        logger.info(f"Uploaded file saved at {file_location}")
+    return {"success": True}
 
-    return {
-        "file_size": len(file),
-        "token": token,
-        "fileb_content_type": fileb.content_type,
-    }
+# Zeroconf
+register_zeroconf()
 
 
-if os.environ.get("LOGS", "1") != "1":
-    print("blocked")
-    blockPrint()
+@app.on_event("shutdown")
+def shutdown_event():
+    unregister_zeroconf()
+
+
+# Uploads Dirs
+if not os.path.exists('uploads'):
+    os.mkdir('uploads')
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", "8000")))
