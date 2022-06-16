@@ -1,4 +1,6 @@
+import os
 import socket
+from unicodedata import name
 from loguru import logger
 from zeroconf import IPVersion, ServiceInfo, Zeroconf
 
@@ -12,13 +14,17 @@ def register_zeroconf():
     IPAddr = s.getsockname()[0]
     s.close()
 
+    type = "_http._tcp.local."
+    name = f"{os.getenv('DEVICE_NAME')}.{type}"
+    company = os.getenv("DEVICE_COMPANY")
+
     port = 8000
     desc = {'url': 'http://' + IPAddr + ":" +
-            str(port), 'company': 'KoiReader'}
+            str(port), 'company': company}
 
     info = ServiceInfo(
-        "_http._tcp.local.",
-        "IoT Edge Device._http._tcp.local.",
+        type,
+        name,
         addresses=[socket.inet_aton(IPAddr)],
         port=port,
         properties=desc,
