@@ -19,8 +19,7 @@ def register_zeroconf():
     company = os.getenv("DEVICE_COMPANY")
 
     port = 8000
-    desc = {'url': 'http://' + IPAddr + ":" +
-            str(port), 'company': company}
+    desc = {"url": "https://" + IPAddr + ":" + str(port), "company": company}
 
     info = ServiceInfo(
         type,
