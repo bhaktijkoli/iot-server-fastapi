@@ -26,22 +26,23 @@ app.add_middleware(
 
 # Ping API
 
+
 @app.get("/ping")
 async def ping():
     return "OK", 200
 
+
 # Upload File API
 
 
-@app.post('/upload')
-async def upload_file(
-    file: UploadFile = File(...)
-):
+@app.post("/upload")
+async def upload_file(file: UploadFile = File(...)):
     file_location = f"uploads/{uuid.uuid4()}.{file.filename.split('.')[-1]}"
     with open(file_location, "wb+") as file_object:
         file_object.write(file.file.read())
         logger.info(f"Uploaded file saved at {file_location}")
     return {"success": True}
+
 
 # Zeroconf
 register_zeroconf()
@@ -53,9 +54,15 @@ def shutdown_event():
 
 
 # Uploads Dirs
-if not os.path.exists('uploads'):
-    os.mkdir('uploads')
+if not os.path.exists("uploads"):
+    os.mkdir("uploads")
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", "8000")))
+    uvicorn.run(
+        app,
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", "8000")),
+        ssl_keyfile="./certs/private.key",
+        ssl_certfile="./certs/CA.crt",
+    )
