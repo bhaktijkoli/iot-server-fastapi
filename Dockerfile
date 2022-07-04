@@ -13,8 +13,11 @@ RUN pip install -r /code/requirements.txt
 # Copy Code Files
 COPY ./app /code/app
 
+# Copy Cert Files
+COPY ./certs /code/certs
+
 # Expose Port
 EXPOSE 80
 
 # CMD
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80", "--ssl-keyfile", "./certs/private.key", "--ssl-certfile", "./certs/CA.crt"]
