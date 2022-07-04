@@ -5,8 +5,9 @@ from zeroconf_service import register_zeroconf, unregister_zeroconf
 from loguru import logger
 
 import uvicorn
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -37,11 +38,22 @@ async def ping():
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
-    file_location = f"uploads/{uuid.uuid4()}.{file.filename.split('.')[-1]}"
+    file_name = f"{uuid.uuid4()}.{file.filename.split('.')[-1]}"
+    file_location = f"uploads/{file_name}"
     with open(file_location, "wb+") as file_object:
         file_object.write(file.file.read())
         logger.info(f"Uploaded file saved at {file_location}")
-    return {"success": True}
+    return {"success": True, "file": file_name}
+
+
+# Get Upload File API
+@app.get("/uploads/{file_id}")
+async def read_item(file_id):
+    file_location = f"uploads/{file_id}"
+    if os.path.exists(file_location):
+        return FileResponse(file_location)
+    else:
+        raise HTTPException(status_code=404, detail="File not found")
 
 
 # Zeroconf
