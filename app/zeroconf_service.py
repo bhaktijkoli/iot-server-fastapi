@@ -8,7 +8,7 @@ zeroconf = None
 info = None
 
 
-def register_zeroconf():
+async def register_zeroconf():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))
     IPAddr = s.getsockname()[0]
@@ -31,13 +31,13 @@ def register_zeroconf():
     )
 
     zeroconf = Zeroconf()
-    zeroconf.register_service(info)
+    await zeroconf.async_register_service(info)
 
     zeroconf = Zeroconf(ip_version=IPVersion.All)
     logger.info("Zeroconf service started")
 
 
-def unregister_zeroconf():
+async def unregister_zeroconf():
     logger.info("Zeroconf service stopped")
-    zeroconf.unregister_service(info)
+    await zeroconf.async_unregister_service(info)
     zeroconf.close()

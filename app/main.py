@@ -55,13 +55,16 @@ async def read_item(file_id):
         raise HTTPException(status_code=404, detail="File not found")
 
 
-# Zeroconf
-register_zeroconf()
+# Startup Event
+@app.on_event("startup")
+async def startup_event():
+    await register_zeroconf()
 
 
+# Shutdown Event
 @app.on_event("shutdown")
-def shutdown_event():
-    unregister_zeroconf()
+async def shutdown_event():
+    await unregister_zeroconf()
 
 
 # Uploads Dirs
