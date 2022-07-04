@@ -12,5 +12,5 @@ pipenv install
 2. Create **.env** file
 3. Run Application
 ```
-python main.py
+python run.py
 ```
