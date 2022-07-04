@@ -1,10 +1,9 @@
 import os
-import settings
+import app.settings
 import uuid
-from zeroconf_service import register_zeroconf, unregister_zeroconf
+from app.zeroconf_service import register_zeroconf, unregister_zeroconf
 from loguru import logger
 
-import uvicorn
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -68,13 +67,3 @@ def shutdown_event():
 # Uploads Dirs
 if not os.path.exists("uploads"):
     os.mkdir("uploads")
-
-
-if __name__ == "__main__":
-    uvicorn.run(
-        app,
-        host="0.0.0.0",
-        port=int(os.environ.get("PORT", "8000")),
-        ssl_keyfile="./certs/private.key",
-        ssl_certfile="./certs/CA.crt",
-    )
