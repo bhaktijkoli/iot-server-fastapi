@@ -1,7 +1,6 @@
 import os
 import app.settings
 import uuid
-from app.zeroconf_service import register_zeroconf, unregister_zeroconf
 from loguru import logger
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
@@ -53,18 +52,6 @@ async def read_item(file_id):
         return FileResponse(file_location)
     else:
         raise HTTPException(status_code=404, detail="File not found")
-
-
-# Startup Event
-@app.on_event("startup")
-async def startup_event():
-    await register_zeroconf()
-
-
-# Shutdown Event
-@app.on_event("shutdown")
-async def shutdown_event():
-    await unregister_zeroconf()
 
 
 # Uploads Dirs

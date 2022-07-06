@@ -7,7 +7,6 @@ name = "pypi"
 fastapi = {version = "==0.55.1", extras = ["all"]}
 loguru = "==0.5.0"
 python-dotenv = "==0.13.0"
-zeroconf = "*"
 uuid = "*"
 
 [dev-packages]

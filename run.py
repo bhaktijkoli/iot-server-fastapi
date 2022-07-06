@@ -10,4 +10,5 @@ if __name__ == "__main__":
         port=int(os.environ.get("PORT", "8000")),
         ssl_keyfile="./certs/private.key",
         ssl_certfile="./certs/CA.crt",
+        lifespan="on",
     )
